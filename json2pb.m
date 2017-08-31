@@ -30,32 +30,19 @@ static json_t * field2json(GPBMessage* msg, GPBFieldDescriptor *field, size_t in
     break;                                                                     \
   }
 
-      __CASE(GPBDataTypeDouble, double, json_real, GPBDoubleArray,
-             GPBGetMessageDoubleField);
-      __CASE(GPBDataTypeFloat, double, json_real, GPBFloatArray,
-             GPBGetMessageFloatField);
-      __CASE(GPBDataTypeInt64, json_int_t, json_integer, GPBInt64Array,
-             GPBGetMessageInt64Field);
-      __CASE(GPBDataTypeSFixed64, json_int_t, json_integer, GPBInt64Array,
-             GPBGetMessageInt64Field);
-      __CASE(GPBDataTypeSInt64, json_int_t, json_integer, GPBInt64Array,
-             GPBGetMessageInt64Field);
-      __CASE(GPBDataTypeUInt64, json_int_t, json_integer, GPBUInt64Array,
-             GPBGetMessageUInt64Field);
-      __CASE(GPBDataTypeFixed64, json_int_t, json_integer, GPBUInt64Array,
-             GPBGetMessageUInt64Field);
-      __CASE(GPBDataTypeInt32, json_int_t, json_integer, GPBInt32Array,
-             GPBGetMessageInt32Field);
-      __CASE(GPBDataTypeSInt32, json_int_t, json_integer, GPBInt32Array,
-             GPBGetMessageInt32Field);
-      __CASE(GPBDataTypeSFixed32, json_int_t, json_integer, GPBInt32Array,
-             GPBGetMessageInt32Field);
-      __CASE(GPBDataTypeUInt32, json_int_t, json_integer, GPBUInt32Array,
-             GPBGetMessageUInt32Field);
-      __CASE(GPBDataTypeFixed32, json_int_t, json_integer, GPBUInt32Array,
-             GPBGetMessageUInt32Field);
-      __CASE(GPBDataTypeBool, bool, json_boolean, GPBBoolArray,
-             GPBGetMessageBoolField);
+            __CASE(GPBDataTypeDouble, double, json_real,GPBDoubleArray,GPBGetMessageDoubleField);
+            __CASE(GPBDataTypeFloat, double, json_real,GPBFloatArray,GPBGetMessageFloatField);
+            __CASE(GPBDataTypeInt64, json_int_t, json_integer,GPBInt64Array,GPBGetMessageInt64Field);
+            __CASE(GPBDataTypeSFixed64, json_int_t, json_integer,GPBInt64Array,GPBGetMessageInt64Field);
+            __CASE(GPBDataTypeSInt64, json_int_t, json_integer,GPBInt64Array,GPBGetMessageInt64Field);
+            __CASE(GPBDataTypeUInt64, json_int_t, json_integer,GPBUInt64Array,GPBGetMessageUInt64Field);
+            __CASE(GPBDataTypeFixed64, json_int_t, json_integer,GPBUInt64Array,GPBGetMessageUInt64Field);
+            __CASE(GPBDataTypeInt32, json_int_t, json_integer,GPBInt32Array,GPBGetMessageInt32Field);
+            __CASE(GPBDataTypeSInt32, json_int_t, json_integer,GPBInt32Array,GPBGetMessageInt32Field);
+            __CASE(GPBDataTypeSFixed32, json_int_t, json_integer,GPBInt32Array,GPBGetMessageInt32Field);
+            __CASE(GPBDataTypeUInt32, json_int_t, json_integer,GPBUInt32Array,GPBGetMessageUInt32Field);
+            __CASE(GPBDataTypeFixed32, json_int_t, json_integer,GPBUInt32Array,GPBGetMessageUInt32Field);
+            __CASE(GPBDataTypeBool, bool, json_boolean,GPBBoolArray,GPBGetMessageBoolField);
 #undef __CASE
         case GPBDataTypeString:
         {
@@ -183,32 +170,20 @@ static void json2fieldInternal(GPBMessage* msg, GPBFieldDescriptor* field, json_
     break;                                                                     \
   }
 
-      __CASE(GPBDataTypeDouble, double, "F", GPBDoubleArray,
-             GPBSetMessageDoubleField);
-      __CASE(GPBDataTypeFloat, double, "F", GPBFloatArray,
-             GPBSetMessageFloatField);
-      __CASE(GPBDataTypeInt64, json_int_t, "I", GPBInt64Array,
-             GPBSetMessageInt64Field);
-
-      __CASE(GPBDataTypeSFixed64, json_int_t, "I", GPBInt64Array,
-             GPBSetMessageInt64Field);
-      __CASE(GPBDataTypeSInt64, json_int_t, "I", GPBInt64Array,
-             GPBSetMessageInt64Field);
-      __CASE(GPBDataTypeUInt64, json_int_t, "I", GPBUInt64Array,
-             GPBSetMessageUInt64Field);
-      __CASE(GPBDataTypeFixed64, json_int_t, "I", GPBUInt64Array,
-             GPBSetMessageUInt64Field);
-      __CASE(GPBDataTypeInt32, json_int_t, "I", GPBInt32Array,
-             GPBSetMessageInt32Field);
-      __CASE(GPBDataTypeSInt32, json_int_t, "I", GPBInt32Array,
-             GPBSetMessageInt32Field);
-      __CASE(GPBDataTypeSFixed32, json_int_t, "I", GPBInt32Array,
-             GPBSetMessageInt32Field);
-      __CASE(GPBDataTypeUInt32, json_int_t, "I", GPBUInt32Array,
-             GPBSetMessageUInt32Field);
-      __CASE(GPBDataTypeFixed32, json_int_t, "I", GPBUInt32Array,
-             GPBSetMessageUInt32Field);
-      __CASE(GPBDataTypeBool, int, "b", GPBBoolArray, GPBSetMessageBoolField);
+            __CASE(GPBDataTypeDouble, double, "F",GPBDoubleArray,GPBSetMessageDoubleField);
+            __CASE(GPBDataTypeFloat, double, "F",GPBFloatArray,GPBSetMessageFloatField);
+            __CASE(GPBDataTypeInt64, json_int_t,"I", GPBInt64Array,GPBSetMessageInt64Field);
+            
+            __CASE(GPBDataTypeSFixed64,json_int_t, "I", GPBInt64Array,GPBSetMessageInt64Field);
+            __CASE(GPBDataTypeSInt64,json_int_t, "I", GPBInt64Array,GPBSetMessageInt64Field);
+            __CASE(GPBDataTypeUInt64,json_int_t, "I", GPBUInt64Array,GPBSetMessageUInt64Field);
+            __CASE(GPBDataTypeFixed64,json_int_t, "I", GPBUInt64Array,GPBSetMessageUInt64Field);
+            __CASE(GPBDataTypeInt32,json_int_t, "I", GPBInt32Array,GPBSetMessageInt32Field);
+            __CASE(GPBDataTypeSInt32,json_int_t, "I", GPBInt32Array,GPBSetMessageInt32Field);
+            __CASE(GPBDataTypeSFixed32,json_int_t, "I", GPBInt32Array,GPBSetMessageInt32Field);
+            __CASE(GPBDataTypeUInt32,json_int_t, "I", GPBUInt32Array,GPBSetMessageUInt32Field);
+            __CASE(GPBDataTypeFixed32,json_int_t, "I", GPBUInt32Array,GPBSetMessageUInt32Field);
+            __CASE(GPBDataTypeBool, int, "b",GPBBoolArray,GPBSetMessageBoolField);
 #undef __SET_OR_ADD
 #undef __CASE
 
