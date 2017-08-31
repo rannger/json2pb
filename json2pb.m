@@ -17,33 +17,45 @@ static json_t * field2json(GPBMessage* msg, GPBFieldDescriptor *field, size_t in
     json_t* jf = NULL;
 
     switch ([field dataType]) {
-#define __CASE(type, ctype, fmt, arraytype,sfunc)		\
-        case type: \
-        { \
-            ctype value; \
-            if (repeated) { \
-                arraytype* array = GPBGetMessageRepeatedField(msg,field); \
-                value = [array valueAtIndex:index]; \
-            } else { \
-                value = sfunc(msg, field); \
-            } \
-            jf = fmt(value); \
-            break;\
-        }
+#define __CASE(type, ctype, fmt, arraytype, sfunc)                             \
+  case type: {                                                                 \
+    ctype value;                                                               \
+    if (repeated) {                                                            \
+      arraytype *array = GPBGetMessageRepeatedField(msg, field);               \
+      value = [array valueAtIndex:index];                                      \
+    } else {                                                                   \
+      value = sfunc(msg, field);                                               \
+    }                                                                          \
+    jf = fmt(value);                                                           \
+    break;                                                                     \
+  }
 
-            __CASE(GPBDataTypeDouble, double, json_real,GPBDoubleArray,GPBGetMessageDoubleField);
-            __CASE(GPBDataTypeFloat, double, json_real,GPBFloatArray,GPBGetMessageFloatField);
-            __CASE(GPBDataTypeInt64, json_int_t, json_integer,GPBInt64Array,GPBGetMessageInt64Field);
-            __CASE(GPBDataTypeSFixed64, json_int_t, json_integer,GPBInt64Array,GPBGetMessageInt64Field);
-            __CASE(GPBDataTypeSInt64, json_int_t, json_integer,GPBInt64Array,GPBGetMessageInt64Field);
-            __CASE(GPBDataTypeUInt64, json_int_t, json_integer,GPBUInt64Array,GPBGetMessageUInt64Field);
-            __CASE(GPBDataTypeFixed64, json_int_t, json_integer,GPBUInt64Array,GPBGetMessageUInt64Field);
-            __CASE(GPBDataTypeInt32, json_int_t, json_integer,GPBInt32Array,GPBGetMessageInt32Field);
-            __CASE(GPBDataTypeSInt32, json_int_t, json_integer,GPBInt32Array,GPBGetMessageInt32Field);
-            __CASE(GPBDataTypeSFixed32, json_int_t, json_integer,GPBInt32Array,GPBGetMessageInt32Field);
-            __CASE(GPBDataTypeUInt32, json_int_t, json_integer,GPBUInt32Array,GPBGetMessageUInt32Field);
-            __CASE(GPBDataTypeFixed32, json_int_t, json_integer,GPBUInt32Array,GPBGetMessageUInt32Field);
-            __CASE(GPBDataTypeBool, bool, json_boolean,GPBBoolArray,GPBGetMessageBoolField);
+      __CASE(GPBDataTypeDouble, double, json_real, GPBDoubleArray,
+             GPBGetMessageDoubleField);
+      __CASE(GPBDataTypeFloat, double, json_real, GPBFloatArray,
+             GPBGetMessageFloatField);
+      __CASE(GPBDataTypeInt64, json_int_t, json_integer, GPBInt64Array,
+             GPBGetMessageInt64Field);
+      __CASE(GPBDataTypeSFixed64, json_int_t, json_integer, GPBInt64Array,
+             GPBGetMessageInt64Field);
+      __CASE(GPBDataTypeSInt64, json_int_t, json_integer, GPBInt64Array,
+             GPBGetMessageInt64Field);
+      __CASE(GPBDataTypeUInt64, json_int_t, json_integer, GPBUInt64Array,
+             GPBGetMessageUInt64Field);
+      __CASE(GPBDataTypeFixed64, json_int_t, json_integer, GPBUInt64Array,
+             GPBGetMessageUInt64Field);
+      __CASE(GPBDataTypeInt32, json_int_t, json_integer, GPBInt32Array,
+             GPBGetMessageInt32Field);
+      __CASE(GPBDataTypeSInt32, json_int_t, json_integer, GPBInt32Array,
+             GPBGetMessageInt32Field);
+      __CASE(GPBDataTypeSFixed32, json_int_t, json_integer, GPBInt32Array,
+             GPBGetMessageInt32Field);
+      __CASE(GPBDataTypeUInt32, json_int_t, json_integer, GPBUInt32Array,
+             GPBGetMessageUInt32Field);
+      __CASE(GPBDataTypeFixed32, json_int_t, json_integer, GPBUInt32Array,
+             GPBGetMessageUInt32Field);
+      __CASE(GPBDataTypeBool, bool, json_boolean, GPBBoolArray,
+             GPBGetMessageBoolField);
 #undef __CASE
         case GPBDataTypeString:
         {
@@ -121,7 +133,6 @@ static json_t * pb2jsonInternal(GPBMessage* msg,NSDictionary* map)
                 }
                 jf = list;
             }
-            
         } else if (GPBGetHasIvarField(msg, field)) {
             jf = field2json(msg, field, 0,map);
         } else {
@@ -144,62 +155,76 @@ static void json2fieldInternal(GPBMessage* msg, GPBFieldDescriptor* field, json_
     json_error_t error;
     
     switch ([field dataType]) {
-    
-#define __SET_OR_ADD(sfunc,value,arraytype) \
-    do {    \
-            if (repeated) { \
-                arraytype* array = GPBGetMessageRepeatedField(msg,field); \
-                if ([array respondsToSelector:@selector(addValue:)]) { \
-                    [array addValue:value]; \
-                } else { \
-                    assert(0); \
-                } \
-            } else { \
-                sfunc(msg, field, value); \
-            } \
-    } while (0);
-#define __CASE(type, ctype, fmt, arraytype,sfunc) \
-        case type: \
-        { \
-            ctype value; \
-            int r = json_unpack_ex(jf, &error, JSON_STRICT, fmt,&value); \
-            if (r) { \
-                [NSException exceptionWithName:@"json2field failed" reason:[NSString stringWithUTF8String:error.text] userInfo:nil]; \
-            } \
-            __SET_OR_ADD(sfunc, value, arraytype); \
-            break; \
-        }
-            
-            __CASE(GPBDataTypeDouble, double, "F",GPBDoubleArray,GPBSetMessageDoubleField);
-            __CASE(GPBDataTypeFloat, double, "F",GPBFloatArray,GPBSetMessageFloatField);
-            __CASE(GPBDataTypeInt64, json_int_t,"I", GPBInt64Array,GPBSetMessageInt64Field);
-            
-            __CASE(GPBDataTypeSFixed64,json_int_t, "I", GPBInt64Array,GPBSetMessageInt64Field);
-            __CASE(GPBDataTypeSInt64,json_int_t, "I", GPBInt64Array,GPBSetMessageInt64Field);
-            __CASE(GPBDataTypeUInt64,json_int_t, "I", GPBUInt64Array,GPBSetMessageUInt64Field);
-            __CASE(GPBDataTypeFixed64,json_int_t, "I", GPBUInt64Array,GPBSetMessageUInt64Field);
-            __CASE(GPBDataTypeInt32,json_int_t, "I", GPBInt32Array,GPBSetMessageInt32Field);
-            __CASE(GPBDataTypeSInt32,json_int_t, "I", GPBInt32Array,GPBSetMessageInt32Field);
-            __CASE(GPBDataTypeSFixed32,json_int_t, "I", GPBInt32Array,GPBSetMessageInt32Field);
-            __CASE(GPBDataTypeUInt32,json_int_t, "I", GPBUInt32Array,GPBSetMessageUInt32Field);
-            __CASE(GPBDataTypeFixed32,json_int_t, "I", GPBUInt32Array,GPBSetMessageUInt32Field);
-            __CASE(GPBDataTypeBool, int, "b",GPBBoolArray,GPBSetMessageBoolField);
+
+#define __SET_OR_ADD(sfunc, value, arraytype)                                  \
+  do {                                                                         \
+    if (repeated) {                                                            \
+      arraytype *array = GPBGetMessageRepeatedField(msg, field);               \
+      if ([array respondsToSelector:@selector(addValue:)]) {                   \
+        [array addValue:value];                                                \
+      } else {                                                                 \
+        assert(0);                                                             \
+      }                                                                        \
+    } else {                                                                   \
+      sfunc(msg, field, value);                                                \
+    }                                                                          \
+  } while (0);
+#define __CASE(type, ctype, fmt, arraytype, sfunc)                             \
+  case type: {                                                                 \
+    ctype value;                                                               \
+    int r = json_unpack_ex(jf, &error, JSON_STRICT, fmt, &value);              \
+    if (r) {                                                                   \
+      [NSException                                                             \
+          exceptionWithName:@"json2field failed"                               \
+                     reason:[NSString stringWithUTF8String:error.text]         \
+                   userInfo:nil];                                              \
+    }                                                                          \
+    __SET_OR_ADD(sfunc, value, arraytype);                                     \
+    break;                                                                     \
+  }
+
+      __CASE(GPBDataTypeDouble, double, "F", GPBDoubleArray,
+             GPBSetMessageDoubleField);
+      __CASE(GPBDataTypeFloat, double, "F", GPBFloatArray,
+             GPBSetMessageFloatField);
+      __CASE(GPBDataTypeInt64, json_int_t, "I", GPBInt64Array,
+             GPBSetMessageInt64Field);
+
+      __CASE(GPBDataTypeSFixed64, json_int_t, "I", GPBInt64Array,
+             GPBSetMessageInt64Field);
+      __CASE(GPBDataTypeSInt64, json_int_t, "I", GPBInt64Array,
+             GPBSetMessageInt64Field);
+      __CASE(GPBDataTypeUInt64, json_int_t, "I", GPBUInt64Array,
+             GPBSetMessageUInt64Field);
+      __CASE(GPBDataTypeFixed64, json_int_t, "I", GPBUInt64Array,
+             GPBSetMessageUInt64Field);
+      __CASE(GPBDataTypeInt32, json_int_t, "I", GPBInt32Array,
+             GPBSetMessageInt32Field);
+      __CASE(GPBDataTypeSInt32, json_int_t, "I", GPBInt32Array,
+             GPBSetMessageInt32Field);
+      __CASE(GPBDataTypeSFixed32, json_int_t, "I", GPBInt32Array,
+             GPBSetMessageInt32Field);
+      __CASE(GPBDataTypeUInt32, json_int_t, "I", GPBUInt32Array,
+             GPBSetMessageUInt32Field);
+      __CASE(GPBDataTypeFixed32, json_int_t, "I", GPBUInt32Array,
+             GPBSetMessageUInt32Field);
+      __CASE(GPBDataTypeBool, int, "b", GPBBoolArray, GPBSetMessageBoolField);
 #undef __SET_OR_ADD
 #undef __CASE
-            
-#define __SET_OR_ADD(sfunc,value,arraytype) \
-        do {    \
-            if (repeated) { \
-            arraytype* array = GPBGetMessageRepeatedField(msg,field); \
-                if ([array respondsToSelector:@selector(addObject:)]) { \
-                    [array addObject:value]; \
-                } else { \
-                    assert(0); \
-                } \
-            } else { \
-                sfunc(msg, field, value); \
-            } \
-        } while (0);
+
+#define __SET_OR_ADD(sfunc, value, arraytype)                                  \
+  do {                                                                         \
+    if (repeated) {                                                            \
+      arraytype *array = GPBGetMessageRepeatedField(msg, field);               \
+      if ([array respondsToSelector:@selector(addObject:)]) {                  \
+        [array addObject:value];                                               \
+      } else {                                                                 \
+        assert(0);                                                             \
+      }                                                                        \
+    } else {                                                                   \
+      sfunc(msg, field, value);                                                \
+    }                                                                          \
+  } while (0);
 
         case GPBDataTypeString:
         {
@@ -244,12 +269,14 @@ static void json2fieldInternal(GPBMessage* msg, GPBFieldDescriptor* field, json_
             if (json_is_integer(jf)) {
                value = (uint32_t)json_integer_value(jf);
             } else if (json_is_string(jf)) {
-                BOOL ret = [ed getValue:&value forEnumName:[NSString stringWithUTF8String:json_string_value(jf)]];
+                BOOL ret = [ed getValue:&value
+                            forEnumName:[NSString stringWithUTF8String:json_string_value(jf)]];
                 assert(ret);
             } else {
-                 [NSException exceptionWithName:@"Not an integer or string" reason:@"Not an integer or string" userInfo:nil];
+                 [NSException exceptionWithName:@"Not an integer or string"
+                                         reason:@"Not an integer or string"
+                                       userInfo:nil];
             }
-            
             if (repeated) {
                 GPBEnumArray* array = GPBGetMessageRepeatedField(msg, field);
                 [array addRawValue:value];
@@ -267,18 +294,23 @@ static void json2pbInternal(GPBMessage* msg, json_t *root,NSDictionary* map)
 {
     GPBDescriptor* d = [msg descriptor];
     if (!d)
-        [NSException exceptionWithName:@"No descriptor or reflection" reason:@"No descriptor or reflection" userInfo:nil];
+        [NSException exceptionWithName:@"No descriptor or reflection"
+                                reason:@"No descriptor or reflection"
+                              userInfo:nil];
     
     for (void *i = json_object_iter(root); i; i = json_object_iter_next(root, i)) {
         const char *nameStr = json_object_iter_key(i);
         json_t *jf = json_object_iter_value(i);
         NSString* name = [NSString stringWithUTF8String:nameStr];
-        if (map!=nil && [[map objectForKey:name] isKindOfClass:[NSString class]] && [[map objectForKey:name] length]!=0) {
+        if (map!=nil &&
+            [[map objectForKey:name] isKindOfClass:[NSString class]] &&
+            [[map objectForKey:name] length]!=0) {
             name = [map objectForKey:name];
         }
         GPBFieldDescriptor* field = [d fieldWithName:name];
         if (!field) {
-            [NSException exceptionWithName:@"No descriptor or reflection" reason:@"No descriptor or reflection" userInfo:nil];
+            [NSException exceptionWithName:@"No descriptor or reflection"
+                                    reason:@"No descriptor or reflection" userInfo:nil];
         }
         
         if ([field fieldType] == GPBFieldTypeRepeated) {
@@ -292,15 +324,13 @@ static void json2pbInternal(GPBMessage* msg, json_t *root,NSDictionary* map)
     }
 }
 
-
-static int json_dump_string(const char *buf, size_t size, void *data)
+static int jsonDumpString(const char *buf, size_t size, void *data)
 {
     NSMutableString *s = (__bridge NSMutableString *) data;
     NSString* string = [[NSString alloc] initWithBytes:buf length:size encoding:NSUTF8StringEncoding];
     [s appendString:string];
     return 0;
 }
-
 
 @implementation GPBMessage (JSON)
 
@@ -312,10 +342,14 @@ static int json_dump_string(const char *buf, size_t size, void *data)
     root = json_loadb([data bytes], [data length], 0, &error);
     
     if (!root)
-        [NSException exceptionWithName:@"Load failed" reason:[NSString stringWithUTF8String:error.text] userInfo:nil];
+        [NSException exceptionWithName:@"Load failed"
+                                reason:[NSString stringWithUTF8String:error.text]
+                              userInfo:nil];
     
     if (!json_is_object(root))
-        [NSException exceptionWithName:@"Malformed JSON: not an object" reason:@"Malformed JSON: not an object" userInfo:nil];
+        [NSException exceptionWithName:@"Malformed JSON: not an object"
+                                reason:@"Malformed JSON: not an object"
+                              userInfo:nil];
     
     json2pbInternal(msg, root, nil==map?@{}:map);
     
@@ -323,13 +357,11 @@ static int json_dump_string(const char *buf, size_t size, void *data)
 
 }
 
-
-
 + (NSString*)toJson:(GPBMessage*)msg keyMap:(NSDictionary*)map
 {
     NSMutableString* r = [NSMutableString stringWithCapacity:1024];
     json_t *root = pb2jsonInternal(msg,map==nil?@{}:map);
-    json_dump_callback(root, json_dump_string, (__bridge void*)r, 0);
+    json_dump_callback(root, jsonDumpString, (__bridge void*)r, 0);
     json_decref(root);
     return r;
 }
