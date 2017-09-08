@@ -245,7 +245,7 @@ static void json2fieldInternal(GPBMessage* msg, GPBFieldDescriptor* field, json_
                value = (uint32_t)json_integer_value(jf);
             } else if (json_is_string(jf)) {
                 BOOL ret = [ed getValue:&value
-                            forEnumName:[NSString stringWithUTF8String:json_string_value(jf)]];
+                            forEnumTextFormatName:[NSString stringWithUTF8String:json_string_value(jf)]];
                 assert(ret);
             } else {
                  [NSException exceptionWithName:@"Not an integer or string"
