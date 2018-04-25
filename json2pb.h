@@ -6,13 +6,7 @@
 //  Copyright © 2017年 yy. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-
-#if GPB_USE_PROTOBUF_FRAMEWORK_IMPORTS
-#import <Protobuf/GPBProtocolBuffers_RuntimeSupport.h>
-#else
-#import "GPBProtocolBuffers_RuntimeSupport.h"
-#endif
+#import <Protobuf/GPBMessage.h>
 
 @interface GPBMessage (JSON)
 + (void)fromJson:(GPBMessage*)msg data:(NSData*)data keyMap:(NSDictionary*)map;

@@ -8,7 +8,8 @@
 
 #import "json2pb.h"
 #import <jansson.h>
-#import <GPBUtilities.h>
+#import <Protobuf/GPBProtocolBuffers_RuntimeSupport.h>
+
 
 static json_t * pb2jsonInternal(GPBMessage* msg,NSDictionary* map);
 static json_t * field2json(GPBMessage* msg, GPBFieldDescriptor *field, size_t index,NSDictionary* map)
@@ -125,7 +126,7 @@ static json_t * pb2jsonInternal(GPBMessage* msg,NSDictionary* map)
         } else {
             continue;
         }
-        NSString* name = [field name];
+        NSString* name = [field textFormatName];
         if (map!=nil && [[map objectForKey:name] isKindOfClass:[NSString class]] && [[map objectForKey:name] length]!=0) {
             name = [map objectForKey:name];
         }
@@ -282,7 +283,17 @@ static void json2pbInternal(GPBMessage* msg, json_t *root,NSDictionary* map)
             [[map objectForKey:name] length]!=0) {
             name = [map objectForKey:name];
         }
+
         GPBFieldDescriptor* field = [d fieldWithName:name];
+        if (!field) {
+            for (GPBFieldDescriptor* f in [d fields]) {
+                if ([[f textFormatName] isEqualToString:name]) {
+                    field = f;
+                    break;
+                }
+            }
+        }
+        
         if (!field) {
             [NSException exceptionWithName:@"No descriptor or reflection"
                                     reason:@"No descriptor or reflection" userInfo:nil];
