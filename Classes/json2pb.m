@@ -9,12 +9,21 @@
 #import "json2pb.h"
 #import <Protobuf/GPBProtocolBuffers_RuntimeSupport.h>
 
-static inline NSNumber* json_real(double value) { return [NSNumber numberWithDouble:value]; }
-static inline NSNumber* json_integer(int64_t value) { return [NSNumber numberWithLongLong:value]; }
-static inline NSNumber* json_boolean(bool value) { return [NSNumber numberWithBool:value]; }
+static inline NSNumber* json_real(double value) { 
+    return [NSNumber numberWithDouble:value]; 
+}
+static inline NSNumber* json_integer(int64_t value) { 
+    return [NSNumber numberWithLongLong:value]; 
+}
+static inline NSNumber* json_boolean(bool value) { 
+    return [NSNumber numberWithBool:value];
+}
+static id<NSObject> field2json(GPBMessage* msg, GPBFieldDescriptor *field, size_t index);
 static id<NSObject> pb2jsonInternal(GPBMessage* msg);
-static id<NSObject> field2json(GPBMessage* msg, GPBFieldDescriptor *field, size_t index)
-{
+static void json2pbInternal(GPBMessage* msg, id<NSObject> root);
+static void json2fieldInternal(GPBMessage* msg, GPBFieldDescriptor* field, id<NSObject> jf);
+
+static id<NSObject> field2json(GPBMessage* msg, GPBFieldDescriptor *field, size_t index) {
     BOOL repeated = ([field fieldType] == GPBFieldTypeRepeated);
     id<NSObject> jf = NULL;
 
@@ -104,8 +113,7 @@ static id<NSObject> field2json(GPBMessage* msg, GPBFieldDescriptor *field, size_
     return jf;
 }
 
-static id<NSObject> pb2jsonInternal(GPBMessage* msg)
-{
+static id<NSObject> pb2jsonInternal(GPBMessage* msg) {
     GPBDescriptor* d = [msg descriptor];
     NSMutableDictionary* root = [NSMutableDictionary dictionaryWithCapacity:10];
     
@@ -137,9 +145,7 @@ static id<NSObject> pb2jsonInternal(GPBMessage* msg)
     return root;
 }
 
-static void json2pbInternal(GPBMessage* msg, id<NSObject> root);
-static void json2fieldInternal(GPBMessage* msg, GPBFieldDescriptor* field, id<NSObject> jf)
-{
+static void json2fieldInternal(GPBMessage* msg, GPBFieldDescriptor* field, id<NSObject> jf) {
     BOOL repeated = ([field fieldType] == GPBFieldTypeRepeated);
     switch ([field dataType]) {
 
@@ -259,8 +265,7 @@ static void json2fieldInternal(GPBMessage* msg, GPBFieldDescriptor* field, id<NS
     }
 }
 
-static void json2pbInternal(GPBMessage* msg, id<NSObject> root)
-{
+static void json2pbInternal(GPBMessage* msg, id<NSObject> root) {
     GPBDescriptor* d = [msg descriptor];
     if (!d)
         [NSException exceptionWithName:@"No descriptor or reflection"
@@ -297,18 +302,9 @@ static void json2pbInternal(GPBMessage* msg, id<NSObject> root)
     }
 }
 
-static int jsonDumpString(const char *buf, size_t size, void *data)
-{
-    NSMutableString *s = (__bridge NSMutableString *) data;
-    NSString* string = [[NSString alloc] initWithBytes:buf length:size encoding:NSUTF8StringEncoding];
-    [s appendString:string];
-    return 0;
-}
-
 @implementation GPBMessage (JSON)
 
-+ (void)fromJson:(GPBMessage*)msg data:(NSData*)data
-{
++ (void)fromJson:(GPBMessage*)msg data:(NSData*)data {
     NSError* error = nil;
     id<NSObject> root = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
     
@@ -320,8 +316,7 @@ static int jsonDumpString(const char *buf, size_t size, void *data)
     json2pbInternal(msg, root);
 }
 
-+ (NSString*)toJson:(GPBMessage*)msg
-{
++ (NSString*)toJson:(GPBMessage*)msg {
     id<NSObject> root = pb2jsonInternal(msg);
     NSAssert([NSJSONSerialization isValidJSONObject:root], @"");
     NSData* data = [NSJSONSerialization dataWithJSONObject:root options:kNilOptions error:nil];
@@ -329,8 +324,7 @@ static int jsonDumpString(const char *buf, size_t size, void *data)
     return r;
 }
 
-- (id)initWithJson:(NSData*)data
-{
+- (instancetype)initWithJson:(NSData*)data {
     self = [self init];
     if (self) {
         [GPBMessage fromJson:self data:data];
@@ -339,8 +333,7 @@ static int jsonDumpString(const char *buf, size_t size, void *data)
     return self;
 }
 
-- (NSString*)toJson
-{
+- (NSString*)toJson {
     return [GPBMessage toJson:self];
 }
 

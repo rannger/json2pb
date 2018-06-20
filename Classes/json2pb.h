@@ -9,6 +9,6 @@
 #import <Protobuf/GPBMessage.h>
 
 @interface GPBMessage (JSON)
-- (id)initWithJson:(NSData*)data;
+- (instancetype)initWithJson:(NSData*)data;
 - (NSString*)toJson;
 @end
