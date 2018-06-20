@@ -9,9 +9,6 @@
 #import <Protobuf/GPBMessage.h>
 
 @interface GPBMessage (JSON)
-+ (void)fromJson:(GPBMessage*)msg data:(NSData*)data keyMap:(NSDictionary*)map;
-+ (NSString*)toJson:(GPBMessage*)msg keyMap:(NSDictionary*)map;
-
 - (id)initWithJson:(NSData*)data;
 - (NSString*)toJson;
 @end

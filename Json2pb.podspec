@@ -10,5 +10,4 @@ Pod::Spec.new do |s|
   s.source_files  =  'Classes/*.{h,m}'
   s.requires_arc  =  true
   s.dependency       'Protobuf'
-  s.dependency       'Jansson'
 end
