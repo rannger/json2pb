@@ -304,7 +304,9 @@ static void json2pbInternal(GPBMessage* msg, id<NSObject> root) {
 
 + (void)fromJson:(GPBMessage*)msg data:(NSData*)data {
   NSError* error = nil;
-  id<NSObject> root = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+  id<NSObject> root = [NSJSONSerialization JSONObjectWithData:data
+                                                      options:kNilOptions
+                                                        error:&error];
   
   if (nil!=error) {
     NSAssert(NO,@"Load failed");
